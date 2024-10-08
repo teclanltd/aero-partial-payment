@@ -1,5 +1,5 @@
 {
-    "name": "teclan-ltd/aero-partial-payment",
+    "name": "teclanltd/aero-partial-payment",
     "description": "",
     "require": {
         "php": "^7.2|^8.0",
