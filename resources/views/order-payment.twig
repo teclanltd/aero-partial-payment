@@ -1,0 +1,39 @@
+<div class="card">
+<h2>Add a new partial Payment</h2>
+<form action="{{ route('admin.teclanpart.orders.update') }}" method="post" data-overlay-when-submitted>
+	{{ csrf_field() }}
+	<input type="hidden" name="id" value="{{ order.id }}">
+	<input type="hidden" name="order_id" value="{{ order.id }}">
+	<div class="field-group field-group--right">
+		<div class="field mb-4">
+			<label for="reference">Reference</label>
+			<br>
+			<input id="reference" name="reference" type="text" placeholder="Optional transaction reference">
+		</div>
+		<div class="field mb-4">
+			<label for="description">Description</label>
+			<br>
+			<input id="description" name="description" type="text" placeholder="Add a Description e.g. payment by BACs">
+		</div>
+		{% if setting('teclan-maunal-payment.enable_payment_options') %}
+		<div class="field mb-4">
+			<label for="paymentmethod">Payment Method (select below)</label>
+			<br>
+			<select id="paymentmethod" name="paymentmethod">
+				{% for option in setting('teclan-maunal-payment.payment_options') %}
+					<option value="{{ option }}">{{ option }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		{% endif %}
+		<div class="field mb-4">
+			<label for="transaction-amount">Payment Amount</label>
+			<br>
+			<input id="transaction-amount" name="transaction-amount" type="text" placeholder="Enter Payment amount">
+		</div>
+		<div class="field">
+			<button class="btn btn-secondary sm-full">Confirm & Update</button>
+		</div>
+	</div>
+</form>
+</div>
