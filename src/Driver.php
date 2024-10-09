@@ -41,11 +41,6 @@ class Driver extends PaymentDriver
         return true;
     }
 
-    /**
-     * Register the payment.
-     *
-     * @return \Aero\Payment\Contracts\Response
-     */
     public function register()
     {
         $id = (string) Str::uuid();
@@ -63,11 +58,6 @@ class Driver extends PaymentDriver
         return $response;
     }
 
-    /**
-     * Complete the payment.
-     *
-     * @return PaymentResponse
-     */
     public function complete(): PaymentResponse
     {
         $id = $this->request->input('id', (string) Str::uuid());
@@ -80,9 +70,7 @@ class Driver extends PaymentDriver
             $paymentMethod = $this->request->input('paymentmethod');
         }
 
-        $amount = $this->request->amount
-            ? $this->request->amount * 100
-            : $this->order->total_rounded;
+        $amount = $this->request->amount * 100;
 
         /** @var $payment \Aero\Payment\Models\Payment */
         $payment = $this->order->payments()->updateOrCreate([
@@ -97,23 +85,19 @@ class Driver extends PaymentDriver
             'data' => $transactionId ? [
                 'transaction_id' => $transactionId,
                 'description' => $description,
-                'payment_method' => $paymentMethod
+                'payment_method' => $paymentMethod,
             ] : null,
         ]);
 
-        return $this->capture($amount, $payment);
-    }
+        $response = new PaymentResponse($id);
 
-    /**
-     * Capture a payment that has been authorized.
-     *
-     * @param  int  $amount
-     * @param  Payment  $payment
-     * @return PaymentResponse
-     */
-    public function capture(int $amount, Payment $payment)
-    {
-        $response = new PaymentResponse($payment->id);
+        $payment->data = [
+            'transaction_id' => $transactionId,
+            'description' => $description,
+            'payment_method' => $paymentMethod,
+        ];
+
+        $payment->state = Payment::AUTHORIZED;
 
         $payment->capture([
             'amount' => $amount,
